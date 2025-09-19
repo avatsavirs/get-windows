@@ -34,7 +34,7 @@
 		"build:windows:install": "node-pre-gyp install --fallback-to-build",
 		"build:windows": "node-pre-gyp build",
 		"build:windows:debug": "node-pre-gyp build --debug",
-		"build:macos": "swift build --configuration=release --arch arm64 --arch x86_64 && mv .build/apple/Products/Release/@avatsavirs/get-windows main",
+		"build:macos": "swift build --configuration=release --arch arm64 --arch x86_64 && mv .build/apple/Products/Release/get-windows main",
 		"install": "node-pre-gyp install --fallback-to-build"
 	},
 	"files": [
