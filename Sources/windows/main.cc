@@ -235,7 +235,7 @@ Napi::Value getWindowInformation(const HWND &hwnd, const Napi::CallbackInfo &inf
 std::vector<HWND> _windows;
 
 // EnumWindows callback
-BOOL CALLBACK EnumDekstopWindowsProc(HWND hwnd, LPARAM lParam) {
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 	if (IsWindow(hwnd) && IsWindowEnabled(hwnd) && IsWindowVisible(hwnd)) {
 		WINDOWINFO winInfo{};
 		GetWindowInfo(hwnd, &winInfo);
