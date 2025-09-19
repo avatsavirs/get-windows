@@ -1,18 +1,13 @@
 {
-	"name": "get-windows",
-	"version": "9.2.3",
+	"name": "@avatsavirs/get-windows",
+	"version": "1.0.0",
 	"description": "Get metadata about the active window and open windows (title, id, bounds, owner, URL, etc)",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/sindresorhus/get-windows.git"
+		"url": "git+https://github.com/avatsavirs/get-windows.git"
 	},
-	"funding": "https://github.com/sponsors/sindresorhus",
-	"author": {
-		"name": "Sindre Sorhus",
-		"email": "sindresorhus@gmail.com",
-		"url": "https://sindresorhus.com"
-	},
+	"author": "avatsavirs",
 	"type": "module",
 	"exports": {
 		"types": "./index.d.ts",
@@ -26,7 +21,7 @@
 	"binary": {
 		"module_name": "node-get-windows",
 		"module_path": "./lib/binding/napi-{napi_build_version}-{platform}-{libc}-{arch}",
-		"host": "https://github.com/sindresorhus/get-windows/releases/download/",
+		"host": "https://github.com/avatsavirs/get-windows/releases/download/",
 		"remote_path": "v{version}",
 		"package_name": "napi-{napi_build_version}-{platform}-{libc}-{arch}.tar.gz",
 		"napi_versions": [
@@ -39,7 +34,7 @@
 		"build:windows:install": "node-pre-gyp install --fallback-to-build",
 		"build:windows": "node-pre-gyp build",
 		"build:windows:debug": "node-pre-gyp build --debug",
-		"build:macos": "swift build --configuration=release --arch arm64 --arch x86_64 && mv .build/apple/Products/Release/get-windows main",
+		"build:macos": "swift build --configuration=release --arch arm64 --arch x86_64 && mv .build/apple/Products/Release/@avatsavirs/get-windows main",
 		"install": "node-pre-gyp install --fallback-to-build"
 	},
 	"files": [

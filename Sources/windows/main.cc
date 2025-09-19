@@ -231,10 +231,10 @@ Napi::Value getWindowInformation(const HWND &hwnd, const Napi::CallbackInfo &inf
 	return activeWinObj;
 }
 
-// List of HWND used for EnumDesktopWindows callback
+// List of HWND used for EnumWindows callback
 std::vector<HWND> _windows;
 
-// EnumDesktopWindows callback
+// EnumWindows callback
 BOOL CALLBACK EnumDekstopWindowsProc(HWND hwnd, LPARAM lParam) {
 	if (IsWindow(hwnd) && IsWindowEnabled(hwnd) && IsWindowVisible(hwnd)) {
 		WINDOWINFO winInfo{};
@@ -271,7 +271,7 @@ Napi::Array getOpenWindows(const Napi::CallbackInfo &info) {
 
 	_windows.clear();
 
-	if (EnumDesktopWindows(NULL, (WNDENUMPROC)EnumDekstopWindowsProc, NULL)) {
+	if (EnumWindows(NULL, (WNDENUMPROC)EnumWindowsProc, NULL)) {
 		uint32_t i = 0;
 		for (HWND _win : _windows) {
 			Napi::Value value = getWindowInformation(_win, info);
