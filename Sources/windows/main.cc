@@ -263,7 +263,7 @@ Napi::Value getActiveWindow(const Napi::CallbackInfo &info) {
 	return value;
 }
 
-// Method to get an array of open windows
+// Method to get an array of open windows across all desktops
 Napi::Array getOpenWindows(const Napi::CallbackInfo &info) {
 	Napi::Env env{info.Env()};
 
