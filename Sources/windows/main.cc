@@ -271,7 +271,7 @@ Napi::Array getOpenWindows(const Napi::CallbackInfo &info) {
 
 	_windows.clear();
 
-	if (EnumWindows(NULL, (WNDENUMPROC)EnumWindowsProc, NULL)) {
+	if (EnumWindows((WNDENUMPROC)EnumWindowsProc, NULL)) {
 		uint32_t i = 0;
 		for (HWND _win : _windows) {
 			Napi::Value value = getWindowInformation(_win, info);
