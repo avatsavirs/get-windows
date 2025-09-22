@@ -245,11 +245,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 			&& (winInfo.dwStyle & WS_CAPTION) == WS_CAPTION
 			&& (winInfo.dwStyle & WS_CHILD) == 0
 		) {
-			int ClockedVal;
-			DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, (PVOID)&ClockedVal, sizeof(ClockedVal));
-			if (ClockedVal == 0) {
-				_windows.push_back(hwnd);
-			}
+			_windows.push_back(hwnd);
 		}
 	}
 
