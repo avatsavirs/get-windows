@@ -240,10 +240,18 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 		WINDOWINFO winInfo{};
 		GetWindowInfo(hwnd, &winInfo);
 
+		bool is_toolwindow = (winInfo.dwExStyle & WS_EX_TOOLWINDOW) == WS_EX_TOOLWINDOW;
+		bool has_titlebar = (winInfo.dwStyle & WS_CAPTION) == WS_CAPTION;
+		bool is_child = (winInfo.dwStyle & WS_CHILD) == WS_CHILD;
+		bool is_topmost_window = (winInfo.dwExStyle & WS_EX_TOPMOST) == WS_EX_TOPMOST;
+		bool is_too_small = winInfo.rcWindow.right - winInfo.rcWindow.left < 50 || winInfo.rcWindow.bottom - winInfo.rcWindow.top < 50;
+		bool has_name = GetWindowTextLengthW(hwnd) > 0;
+
+		bool is_standard_window = !is_toolwindow && has_titlebar && !is_child;
+		bool is_overlay_window = !is_toolwindow && !is_child && is_topmost_window && !is_too_small && has_name;
+
 		if (
-			(winInfo.dwExStyle & WS_EX_TOOLWINDOW) == 0
-			&& (winInfo.dwStyle & WS_CAPTION) == WS_CAPTION
-			&& (winInfo.dwStyle & WS_CHILD) == 0
+			is_standard_window || is_overlay_window
 		) {
 			_windows.push_back(hwnd);
 		}

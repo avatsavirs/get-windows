@@ -1,6 +1,6 @@
 {
 	"name": "@avatsavirs/get-windows",
-	"version": "1.0.4",
+	"version": "1.0.6",
 	"description": "Get metadata about the active window and open windows (title, id, bounds, owner, URL, etc)",
 	"license": "MIT",
 	"repository": {
