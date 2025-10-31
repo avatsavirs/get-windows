@@ -231,19 +231,34 @@ Napi::Value getWindowInformation(const HWND &hwnd, const Napi::CallbackInfo &inf
 	return activeWinObj;
 }
 
+bool isWindows11OrGreater() {
+	typedef LONG (WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+	HMODULE hMod = GetModuleHandleW(L"ntdll.dll");
+	if (hMod) {
+		RtlGetVersionPtr RtlGetVersion = (RtlGetVersionPtr)GetProcAddress(hMod, "RtlGetVersion");
+		if (RtlGetVersion) {
+			RTL_OSVERSIONINFOW osInfo = { 0 };
+			osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+			if (RtlGetVersion(&osInfo) == 0) {
+				return osInfo.dwBuildNumber >= 22000;
+			}
+		}
+	}
+	return false;
+}
+
 // List of HWND used for EnumWindows callback
 std::vector<HWND> _windows;
 
 // EnumWindows callback
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 	if (IsWindow(hwnd) && IsWindowEnabled(hwnd) && IsWindowVisible(hwnd)) {
-		DWORD cloakedReason = 0;
-		HRESULT hr = DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &cloakedReason, sizeof(cloakedReason));
-		if (SUCCEEDED(hr)) {
-			// Only skip windows cloaked by app or inherited, not shell-cloaked
-			if (cloakedReason & (DWM_CLOAKED_APP | DWM_CLOAKED_INHERITED)) {
-				return TRUE; // Skip these
-			}
+		static bool isWin11 = isWindows11OrGreater();
+		DWORD cloaked = 0;
+		DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &cloaked, sizeof(cloaked));
+		bool is_cloaked = cloaked != 0;
+		if (is_cloaked && !isWin11) {
+			return TRUE;
 		}
 
 		WINDOWINFO winInfo{};
