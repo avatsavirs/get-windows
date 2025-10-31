@@ -237,6 +237,22 @@ std::vector<HWND> _windows;
 // EnumWindows callback
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 	if (IsWindow(hwnd) && IsWindowEnabled(hwnd) && IsWindowVisible(hwnd)) {
+		DWORD cloakedReason = 0;
+		HRESULT hr = DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &cloakedReason, sizeof(cloakedReason));
+		if (SUCCEEDED(hr)) {
+			// DWM_CLOAKED_APP (1) = cloaked by the application
+			// DWM_CLOAKED_SHELL (2) = cloaked by the shell (virtual desktops)
+			// DWM_CLOAKED_INHERITED (4) = inherited cloaked state
+			
+			// Only skip windows cloaked by app or inherited, not shell-cloaked
+			const DWORD DWM_CLOAKED_APP = 0x00000001;
+			const DWORD DWM_CLOAKED_INHERITED = 0x00000004;
+			
+			if (cloakedReason & (DWM_CLOAKED_APP | DWM_CLOAKED_INHERITED)) {
+				return TRUE; // Skip these
+			}
+		}
+
 		WINDOWINFO winInfo{};
 		GetWindowInfo(hwnd, &winInfo);
 
