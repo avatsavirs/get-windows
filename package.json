@@ -1,5 +1,5 @@
 {
-	"name": "@avatsavirs/get-windows",
+	"name": "@adityahackerrank/get-windows",
 	"version": "1.0.4-beta.0",
 	"description": "Get metadata about the active window and open windows (title, id, bounds, owner, URL, etc)",
 	"license": "MIT",
