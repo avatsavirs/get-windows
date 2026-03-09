@@ -231,19 +231,51 @@ Napi::Value getWindowInformation(const HWND &hwnd, const Napi::CallbackInfo &inf
 	return activeWinObj;
 }
 
+bool isWindows11OrGreater() {
+	typedef LONG (WINAPI *RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+	HMODULE hMod = GetModuleHandleW(L"ntdll.dll");
+	if (hMod) {
+		RtlGetVersionPtr RtlGetVersion = (RtlGetVersionPtr)GetProcAddress(hMod, "RtlGetVersion");
+		if (RtlGetVersion) {
+			RTL_OSVERSIONINFOW osInfo = { 0 };
+			osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+			if (RtlGetVersion(&osInfo) == 0) {
+				return osInfo.dwBuildNumber >= 22000;
+			}
+		}
+	}
+	return false;
+}
+
 // List of HWND used for EnumWindows callback
 std::vector<HWND> _windows;
 
 // EnumWindows callback
 BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 	if (IsWindow(hwnd) && IsWindowEnabled(hwnd) && IsWindowVisible(hwnd)) {
+		static bool isWin11 = isWindows11OrGreater();
+		DWORD cloaked = 0;
+		DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED, &cloaked, sizeof(cloaked));
+		bool is_cloaked = cloaked != 0;
+		if (is_cloaked && !isWin11) {
+			return TRUE;
+		}
+
 		WINDOWINFO winInfo{};
 		GetWindowInfo(hwnd, &winInfo);
 
+		bool is_toolwindow = (winInfo.dwExStyle & WS_EX_TOOLWINDOW) == WS_EX_TOOLWINDOW;
+		bool has_titlebar = (winInfo.dwStyle & WS_CAPTION) == WS_CAPTION;
+		bool is_child = (winInfo.dwStyle & WS_CHILD) == WS_CHILD;
+		bool is_topmost_window = (winInfo.dwExStyle & WS_EX_TOPMOST) == WS_EX_TOPMOST;
+		bool is_too_small = winInfo.rcWindow.right - winInfo.rcWindow.left < 50 || winInfo.rcWindow.bottom - winInfo.rcWindow.top < 50;
+		bool has_name = GetWindowTextLengthW(hwnd) > 0;
+
+		bool is_standard_window = !is_toolwindow && has_titlebar && !is_child;
+		bool is_overlay_window = !is_toolwindow && !is_child && is_topmost_window && !is_too_small && has_name;
+
 		if (
-			(winInfo.dwExStyle & WS_EX_TOOLWINDOW) == 0
-			&& (winInfo.dwStyle & WS_CAPTION) == WS_CAPTION
-			&& (winInfo.dwStyle & WS_CHILD) == 0
+			is_standard_window || is_overlay_window
 		) {
 			_windows.push_back(hwnd);
 		}
