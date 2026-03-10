@@ -262,6 +262,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 		}
 
 		WINDOWINFO winInfo{};
+		winInfo.cbSize = sizeof(winInfo);
 		GetWindowInfo(hwnd, &winInfo);
 
 		bool is_toolwindow = (winInfo.dwExStyle & WS_EX_TOOLWINDOW) == WS_EX_TOOLWINDOW;
@@ -270,12 +271,14 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 		bool is_topmost_window = (winInfo.dwExStyle & WS_EX_TOPMOST) == WS_EX_TOPMOST;
 		bool is_too_small = winInfo.rcWindow.right - winInfo.rcWindow.left < 50 || winInfo.rcWindow.bottom - winInfo.rcWindow.top < 50;
 		bool has_name = GetWindowTextLengthW(hwnd) > 0;
+		bool is_root_window = GetAncestor(hwnd, GA_ROOT) == hwnd;
 
 		bool is_standard_window = !is_toolwindow && has_titlebar && !is_child;
 		bool is_overlay_window = !is_toolwindow && !is_child && is_topmost_window && !is_too_small && has_name;
+		bool is_custom_chrome_window = is_root_window && !is_child && !is_too_small && has_name;
 
 		if (
-			is_standard_window || is_overlay_window
+			is_standard_window || is_overlay_window || is_custom_chrome_window
 		) {
 			_windows.push_back(hwnd);
 		}
