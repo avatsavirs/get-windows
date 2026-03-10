@@ -120,6 +120,9 @@ jobs:
         with:
           name: macos-binary
 
+      - name: Restore macOS binary permissions
+        run: chmod 755 main
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
